@@ -1,4 +1,47 @@
 <template>
+  <div>
+    <h1>Data from Supabase</h1>
+    <ul>
+      <li v-for="book in books" :key="book.id">
+        Title: {{ book.title }}<br/>
+        Read Date: {{ book.read_date }}<br/>
+        Rating: {{ book.rating }}<br/>
+        Review: {{ book.review }}
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+import { ref, onMounted } from 'vue';
+import { createClient } from '@supabase/supabase-js';
+
+export default {
+  name: 'Books',
+  setup() {
+    const SUPABASE_URL = process.env.VUE_APP_SUPABASE_URL;
+    const SUPABASE_ANON_KEY = process.env.VUE_APP_SUPABASE_ANON_KEY;
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const books = ref([]);
+
+    onMounted(async () => {
+      let { data, error } = await supabase.from('books').select('*');
+      if (error) {
+        console.error('Error: ', error);
+      } else {
+        books.value = data;
+      }
+    });
+
+    return { books };
+  },
+};
+</script>
+
+
+<!-- <template>
   <v-container>
     <v-row class="text-center">
       <v-col cols="12">
@@ -146,4 +189,4 @@ export default {
     ],
   }),
 }
-</script>
+</script> -->
