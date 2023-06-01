@@ -137,6 +137,7 @@ export default {
 };
 </script>
 
+
 <!-- <template>
   <div>
     <h1>Data from Supabase</h1>
@@ -179,7 +180,7 @@ export default {
     return { books };
   },
 };
-</script>
+</script> -->
 
 
 <!-- <template>
@@ -330,4 +331,4 @@ export default {
     ],
   }),
 }
-</script> --> -->
+</script> -->
