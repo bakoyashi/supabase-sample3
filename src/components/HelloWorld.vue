@@ -1,4 +1,143 @@
 <template>
+  <v-container>
+    <h1>Data from Supabase</h1>
+    <v-data-table
+      :headers="headers"
+      :items="books"
+      class="elevation-1"
+    >
+      <template v-slot:item.actions="{ item }">
+        <v-icon small class="mr-2" @click="editItem(item)">
+          mdi-pencil
+        </v-icon>
+        <v-icon small @click="deleteItem(item)">
+          mdi-delete
+        </v-icon>
+      </template>
+    </v-data-table>
+    <v-dialog v-model="dialog" max-width="500px">
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on">New Item</v-btn>
+      </template>
+      <v-card>
+        <v-card-title>
+          <span class="headline">{{ editedIndex === -1 ? 'New Item' : 'Edit Item' }}</span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" sm="6" md="4">
+                <v-text-field v-model="editedItem.title" label="Title"></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6" md="4">
+                <v-text-field v-model="editedItem.read_date" label="Read Date"></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6" md="4">
+                <v-text-field v-model="editedItem.rating" label="Rating"></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field v-model="editedItem.review" label="Review"></v-text-field>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-container>
+</template>
+
+<script>
+import { ref, onMounted } from 'vue';
+import { createClient } from '@supabase/supabase-js';
+
+export default {
+  name: 'HelloWrold',
+  setup() {
+    const SUPABASE_URL = process.env.VUE_APP_SUPABASE_URL;
+    const SUPABASE_ANON_KEY = process.env.VUE_APP_SUPABASE_ANON_KEY;
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const headers = [
+      { text: 'Title', value: 'title' },
+      { text: 'Read Date', value: 'read_date' },
+      { text: 'Rating', value: 'rating' },
+      { text: 'Review', value: 'review' },
+      { text: 'Actions', value: 'actions', sortable: false }
+    ];
+
+    const books = ref([]);
+    const dialog = ref(false);
+    const editedIndex = ref(-1);
+    const editedItem = ref({
+      title: '',
+      read_date: '',
+      rating: '',
+      review: ''
+    });
+
+    onMounted(async () => {
+      let { data, error } = await supabase.from('books').select('*');
+      if (error) {
+        console.error('Error: ', error);
+      } else {
+        books.value = data;
+      }
+    });
+
+    const close = () => {
+      dialog.value = false
+      setTimeout(() => {
+        editedItem.value = Object.assign({}, defaultItem)
+        editedIndex.value = -1
+      }, 300)
+    }
+
+    const save = async () => {
+      if (editedIndex.value > -1) {
+        let { data, error } = await supabase.from('books').update(editedItem.value).match({ id: editedItem.value.id });
+        if (error) {
+          console.error('Error: ', error);
+        } else {
+          Object.assign(books[editedIndex.value], editedItem.value)
+        }
+      } else {
+        let { data, error } = await supabase.from('books').insert([editedItem.value]);
+        if (error) {
+          console.error('Error: ', error);
+        } else {
+          books.value.push(data[0]);
+        }
+      }
+      close()
+    }
+
+    const deleteItem = async (item) => {
+      let { data, error } = await supabase.from('books').delete().match({ id: item.id });
+      if (error) {
+        console.error('Error: ', error);
+      } else {
+        books.value.splice(books.value.indexOf(item), 1)
+      }
+    }
+
+    const editItem = (item) => {
+      editedIndex.value = books.value.indexOf(item)
+      editedItem.value = Object.assign({}, item)
+      dialog.value = true
+    }
+
+    return { headers, books, dialog, close, save, deleteItem, editItem };
+  },
+};
+</script>
+
+<!-- <template>
   <div>
     <h1>Data from Supabase</h1>
     <ul>
@@ -191,4 +330,4 @@ export default {
     ],
   }),
 }
-</script> -->
+</script> --> -->
