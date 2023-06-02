@@ -26,17 +26,6 @@
       :items="sports"
       class="elevation-1"
     >
-      <!-- テーブルの各行にアクションボタン（編集と削除）を追加 -->
-      <template v-slot:[`item.actions`]="{ item }">
-        <!-- 編集アイコン。クリックしたらeditItem関数が実行され、アイテムが編集モードになる -->
-        <v-icon small class="mr-2" @click="editItem(item)">
-          mdi-pencil
-        </v-icon>
-        <!-- 削除アイコン。クリックしたらdeleteItem関数が実行され、アイテムが削除される -->
-        <v-icon small @click="deleteItem(item)">
-          mdi-delete
-        </v-icon>
-      </template>
     </v-data-table>
     <!-- v-dialogは、Vuetifyで提供されるダイアログコンポーネントです -->
     <v-dialog v-model="dialog" max-width="500px">
