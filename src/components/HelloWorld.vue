@@ -4,23 +4,40 @@
     <!-- タイトルを表示 -->
     <h1>Data from Supabase</h1>
     <!-- v-data-tableは、Vuetifyで提供されるデータテーブルコンポーネントです -->
-    <v-data-table
+    <!-- <v-data-table
       :headers="headers"
       :items="books"
       class="elevation-1"
-    >
+    > -->
       <!-- テーブルの各行にアクションボタン（編集と削除）を追加 -->
-      <template v-slot:[`item.actions`]="{ item }">
+      <!-- <template v-slot:[`item.actions`]="{ item }"> -->
         <!-- 編集アイコン。クリックしたらeditItem関数が実行され、アイテムが編集モードになる -->
-        <v-icon small class="mr-2" @click="editItem(item)">
+        <!-- <v-icon small class="mr-2" @click="editItem(item)"> -->
           mdi-pencil
-        </v-icon>
+        <!-- </v-icon> -->
         <!-- 削除アイコン。クリックしたらdeleteItem関数が実行され、アイテムが削除される -->
-        <v-icon small @click="deleteItem(item)">
+        <!-- <v-icon small @click="deleteItem(item)"> -->
           mdi-delete
-        </v-icon>
-      </template>
-    </v-data-table>
+        <!-- </v-icon> -->
+      <!-- </template> -->
+    <!-- </v-data-table> -->
+    <v-data-table
+    :headers="headers"
+    :items="sports"
+    class="elevation-1"
+  >
+    <!-- テーブルの各行にアクションボタン（編集と削除）を追加 -->
+    <template v-slot:[`item.actions`]="{ item }">
+      <!-- 編集アイコン。クリックしたらeditItem関数が実行され、アイテムが編集モードになる -->
+      <v-icon small class="mr-2" @click="editItem(item)">
+        mdi-pencil
+      </v-icon>
+      <!-- 削除アイコン。クリックしたらdeleteItem関数が実行され、アイテムが削除される -->
+      <v-icon small @click="deleteItem(item)">
+        mdi-delete
+      </v-icon>
+    </template>
+  </v-data-table>
     <!-- v-dialogは、Vuetifyで提供されるダイアログコンポーネントです -->
     <v-dialog v-model="dialog" max-width="500px">
       <!-- ダイアログを開くためのボタン -->
@@ -91,6 +108,19 @@ export default {
       { text: 'Review', value: 'review' },
       { text: 'Actions', value: 'actions', sortable: false }
     ];
+
+    const sports = [
+        { id: 1, title: "Football", popularity: "High", origin: "England" },
+        { id: 2, title: "Cricket", popularity: "High", origin: "England" },
+        { id: 3, title: "Basketball", popularity: "High", origin: "United States" },
+      ]
+
+    const headersSports =[
+        { text: 'Title', value: 'title' },
+        { text: 'Popularity', value: 'popularity' },
+        { text: 'Origin', value: 'origin' },
+        { text: 'Actions', value: 'actions', sortable: false },
+    ]
 
     // 書籍のリスト
     const books = ref([]);
@@ -175,7 +205,7 @@ export default {
     }
 
     // 使用するデータと関数をreturn
-    return { headers, books, dialog, close, save, deleteItem, editItem };
+    return { headers, books, dialog, close, save, deleteItem, editItem , sports, headersSports};
   },
 };
 </script>
