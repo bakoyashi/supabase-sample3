@@ -6,7 +6,7 @@
       :items="books"
       class="elevation-1"
     >
-      <template v-slot:item.actions="{ item }">
+      <template v-slot:[`item.actions`]="{ item }">
         <v-icon small class="mr-2" @click="editItem(item)">
           mdi-pencil
         </v-icon>
@@ -80,7 +80,12 @@ export default {
       rating: '',
       review: ''
     });
-
+    const defaultItem = { // defaultItemの定義
+      title: '',
+      read_date: '',
+      rating: '',
+      review: ''
+    }
     onMounted(async () => {
       let { data, error } = await supabase.from('books').select('*');
       if (error) {
@@ -93,32 +98,32 @@ export default {
     const close = () => {
       dialog.value = false
       setTimeout(() => {
-        editedItem.value = Object.assign({}, defaultItem)
+        editedItem.value = Object.assign({}, defaultItem) // defaultItemの使用
         editedIndex.value = -1
       }, 300)
     }
 
     const save = async () => {
       if (editedIndex.value > -1) {
-        let { data, error } = await supabase.from('books').update(editedItem.value).match({ id: editedItem.value.id });
+        let { data: updatedData, error } = await supabase.from('books').update(editedItem.value).match({ id: editedItem.value.id });
         if (error) {
           console.error('Error: ', error);
         } else {
-          Object.assign(books[editedIndex.value], editedItem.value)
+          Object.assign(books[editedIndex.value], updatedData[0]) // data変数の使用
         }
       } else {
-        let { data, error } = await supabase.from('books').insert([editedItem.value]);
+        let { data: newData, error } = await supabase.from('books').insert([editedItem.value]);
         if (error) {
           console.error('Error: ', error);
         } else {
-          books.value.push(data[0]);
+          books.value.push(newData[0]); // data変数の使用
         }
       }
       close()
     }
 
     const deleteItem = async (item) => {
-      let { data, error } = await supabase.from('books').delete().match({ id: item.id });
+      let { error } = await supabase.from('books').delete().match({ id: item.id });
       if (error) {
         console.error('Error: ', error);
       } else {
